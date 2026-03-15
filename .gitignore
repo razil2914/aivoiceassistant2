@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Config (contains API keys)
+config/api_keys.json
+
+# PyInstaller
+*.spec
+*.exe
+*.app
+
+# Logs
+*.log
+
+# Memory data
+memory/long_term.json
+
+# Misc
+cyber_hud/node_modules/
+cyber_hud/dist/
+*.gif
