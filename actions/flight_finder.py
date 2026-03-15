@@ -89,7 +89,7 @@ def _parse_date(raw: str) -> str:
         "january": 1,  "february": 2,  "march": 3,     "april": 4,
         "may": 5,      "june": 6,      "july": 7,       "august": 8,
         "september": 9,"october": 10,  "november": 11,  "december": 12,
-        "january": 1,  "ocak": 1,      "ubat": 2,      "mart": 3,
+        "ocak": 1,      "ubat": 2,      "mart": 3,
         "nisan": 4,    "mays": 5,     "haziran": 6,    "temmuz": 7,
         "austos": 8,  "eyll": 9,     "ekim": 10,      "kasm": 11,
         "aralk": 12,

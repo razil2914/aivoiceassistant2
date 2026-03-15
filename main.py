@@ -55,9 +55,6 @@ pya = pyaudio.PyAudio()
 def _get_api_key() -> str:
     with open(API_CONFIG_PATH, "r", encoding="utf-8") as f:
         return json.load(f)["gemini_api_key"]
-    
-    with open(API_CONFIG_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)["gemini_api_key"]
 
 def _load_system_prompt() -> str:
     try:
@@ -866,8 +863,7 @@ class JarvisLive:
                             in_buf = []
 
                             if out_buf:
-                                # Add a newline after the streamed response is complete
-                                self.ui.stream_log("\n", "ai")
+                                self.ui.stream_end()
                                 full_out = "".join(out_buf).strip()
                             out_buf = []
 
@@ -978,7 +974,7 @@ class JarvisLive:
             await asyncio.sleep(1)
 
 def main():
-    ui = JarvisUI("jarvis.gif")
+    ui = JarvisUI()
 
     def runner(jarvis_instance):
         ui.wait_for_api_key()

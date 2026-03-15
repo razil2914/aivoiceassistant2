@@ -8,6 +8,7 @@
 # - Cross-platform: Windows / macOS / Linux
 # - pyautogui + platform-specific API'ler
 
+import os
 import time
 import subprocess
 import sys

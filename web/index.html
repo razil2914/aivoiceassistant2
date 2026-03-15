@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J.A.R.V.I.S</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Background layers -->
+        <div class="bg-grid"></div>
+        <div class="scanline-overlay"></div>
+        <div class="vignette-overlay"></div>
+
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-left">
+                <div class="logo-mark">
+                    <span class="logo-diamond"></span>
+                    <span class="logo-text">J.A.R.V.I.S</span>
+                </div>
+                <span class="version-tag">MK XXX</span>
+            </div>
+            <nav class="tabs">
+                <span class="tab active" data-tab="dashboard">DASHBOARD</span>
+                <span class="tab" data-tab="contacts">CONTACTS</span>
+                <span class="tab" data-tab="notes">NOTES</span>
+                <span class="tab" data-tab="connect">CONNECT</span>
+            </nav>
+            <div class="top-right">
+                <div class="sys-time" id="sysTime">00:00:00</div>
+                <div class="status-badge">
+                    <span class="status-dot"></span>
+                    <span class="status-label">ONLINE</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ═══ TAB PAGES ═══ -->
+
+        <!-- Dashboard (default) -->
+        <main class="main-grid tab-page active" id="page-dashboard">
+            <!-- Left Column -->
+            <aside class="left-col">
+                <section class="panel cam-panel">
+                    <div class="panel-header">
+                        <div class="panel-title-group">
+                            <span class="panel-icon">&#9673;</span>
+                            <span class="panel-title">VISUAL INPUT</span>
+                        </div>
+                        <button class="toggle-btn" id="camToggle" onclick="toggleCam()">
+                            <span class="btn-dot"></span>
+                            CAM
+                        </button>
+                    </div>
+                    <div class="cam-feed" id="camFeedContainer">
+                        <img id="camFeed" src="" alt="" style="display:none">
+                        <div class="cam-offline" id="camOffline">
+                            <svg class="cam-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                            <span>FEED OFFLINE</span>
+                        </div>
+                        <div class="hud-corner tl"></div>
+                        <div class="hud-corner tr"></div>
+                        <div class="hud-corner bl"></div>
+                        <div class="hud-corner br"></div>
+                    </div>
+                </section>
+
+                <section class="panel metrics-panel">
+                    <div class="panel-header">
+                        <div class="panel-title-group">
+                            <span class="panel-icon">&#9635;</span>
+                            <span class="panel-title">SYSTEM METRICS</span>
+                        </div>
+                        <span class="online-badge">LIVE</span>
+                    </div>
+                    <div class="metrics-body">
+                        <div class="metric-block">
+                            <div class="metric-row">
+                                <span class="metric-label">CPU LOAD</span>
+                                <span class="metric-value cyan" id="cpuVal">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill cpu-fill" id="cpuBar" style="width:0%"></div>
+                                <div class="progress-glow cpu-fill" id="cpuGlow" style="width:0%"></div>
+                            </div>
+                        </div>
+                        <div class="metric-block">
+                            <div class="metric-row">
+                                <span class="metric-label">RAM USAGE</span>
+                                <span class="metric-value green" id="ramVal">0% (0.0 GB)</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill ram-fill" id="ramBar" style="width:0%"></div>
+                                <div class="progress-glow ram-fill" id="ramGlow" style="width:0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="panel procs-panel">
+                    <div class="panel-header">
+                        <div class="panel-title-group">
+                            <span class="panel-icon">&#9881;</span>
+                            <span class="panel-title">PROCESSES</span>
+                        </div>
+                    </div>
+                    <div class="proc-table-header">
+                        <span>NAME</span>
+                        <span>CPU</span>
+                        <span>MEM</span>
+                    </div>
+                    <div id="procList" class="proc-list"></div>
+                </section>
+            </aside>
+
+            <!-- Center Column -->
+            <section class="center-col">
+                <div class="orb-container" id="orbContainer">
+                    <canvas id="orbCanvas"></canvas>
+                    <div class="deco-ring deco-ring-1"></div>
+                    <div class="deco-ring deco-ring-2"></div>
+                    <div class="deco-ring deco-ring-3"></div>
+                </div>
+                <div class="center-controls">
+                    <div class="status-indicator" id="statusText">
+                        <div class="status-pulse-dot"></div>
+                        <span class="status-msg">STANDBY</span>
+                    </div>
+                    <button class="mic-btn" id="micBtn" onclick="toggleMic()">
+                        <svg class="mic-icon-svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                        </svg>
+                        <span id="micLabel">MIC OFF</span>
+                        <div class="mic-ring"></div>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Right Column -->
+            <aside class="right-col">
+                <section class="panel transcript-panel">
+                    <div class="panel-header">
+                        <div class="panel-title-group">
+                            <span class="panel-icon">&#9000;</span>
+                            <span class="panel-title">TRANSCRIPT</span>
+                        </div>
+                        <span class="msg-count" id="msgCount">0</span>
+                    </div>
+                    <div class="transcript-log" id="transcriptLog"></div>
+                    <div class="chat-input-wrapper" id="chatInputWrapper">
+                        <span class="input-chevron">&rsaquo;</span>
+                        <input type="text" id="chatInput" placeholder="Enter command..." autocomplete="off" spellcheck="false">
+                        <button class="send-btn" id="sendBtn" onclick="sendChat()">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </section>
+            </aside>
+        </main>
+
+        <!-- Contacts Page -->
+        <div class="tab-page" id="page-contacts">
+            <div class="page-content">
+                <section class="panel full-panel">
+                    <div class="panel-header">
+                        <div class="panel-title-group">
+                            <span class="panel-icon">&#9787;</span>
+                            <span class="panel-title">CONTACTS</span>
+                        </div>
+                    </div>
+                    <div class="page-body">
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" width="48" height="48" style="opacity:0.3;margin-bottom:12px">
+                                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                            </svg>
+                            <span class="empty-label">NO CONTACTS LOADED</span>
+                            <span class="empty-sub">Contacts will appear here once synced</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Notes Page -->
+        <div class="tab-page" id="page-notes">
+            <div class="page-content">
+                <section class="panel full-panel">
+                    <div class="panel-header">
+                        <div class="panel-title-group">
+                            <span class="panel-icon">&#9998;</span>
+                            <span class="panel-title">NOTES</span>
+                        </div>
+                    </div>
+                    <div class="page-body">
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" width="48" height="48" style="opacity:0.3;margin-bottom:12px">
+                                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                            </svg>
+                            <span class="empty-label">NO NOTES YET</span>
+                            <span class="empty-sub">Notes will appear here once created</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Connect Page -->
+        <div class="tab-page" id="page-connect">
+            <div class="page-content">
+                <section class="panel full-panel">
+                    <div class="panel-header">
+                        <div class="panel-title-group">
+                            <span class="panel-icon">&#9889;</span>
+                            <span class="panel-title">CONNECT</span>
+                        </div>
+                    </div>
+                    <div class="page-body">
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" width="48" height="48" style="opacity:0.3;margin-bottom:12px">
+                                <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+                                <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+                            </svg>
+                            <span class="empty-label">NO CONNECTIONS</span>
+                            <span class="empty-sub">Device connections will appear here</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- API Key Setup Overlay -->
+        <div class="setup-overlay" id="setupOverlay" style="display:none;">
+            <div class="setup-box">
+                <div class="setup-orb">
+                    <div class="setup-orb-inner"></div>
+                </div>
+                <h2>INITIALISATION REQUIRED</h2>
+                <p class="setup-sub">ENTER GEMINI API KEY TO ACTIVATE SYSTEMS</p>
+                <div class="setup-input-group">
+                    <input type="password" id="apiKeyInput" placeholder="Paste API key here..." spellcheck="false">
+                    <div class="input-border-glow"></div>
+                </div>
+                <button id="saveKeyBtn" onclick="saveApiKey()">
+                    <span class="btn-text">INITIALISE</span>
+                    <span class="btn-shine"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
